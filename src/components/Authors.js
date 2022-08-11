@@ -1,3 +1,5 @@
+import AuthorYear from "./AuthorYear";
+
 const Authors = (props) => {
   if (!props.show) {
     return null;
@@ -25,6 +27,7 @@ const Authors = (props) => {
           ))}
         </tbody>
       </table>
+      <AuthorYear />
     </div>
   );
 };

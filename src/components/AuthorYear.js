@@ -63,18 +63,6 @@ const AuthorYear = ({ authors }) => {
             ))}
           </select>
         )}
-        {/* <div>
-          <input
-            value={name}
-            onChange={({ target }) => setName(target.value)}
-          />
-        </div>
-        <div>
-          <input
-            value={bornDate}
-            onChange={({ target }) => setBornDate(target.value)}
-          />
-        </div> */}
         <div>
           <input
             value={bornDate}

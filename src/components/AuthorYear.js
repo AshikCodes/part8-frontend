@@ -15,7 +15,9 @@ const ALL_BOOKS = gql`
   query {
     allBooks {
       title
-      author
+      author {
+        name
+      }
       published
     }
   }
@@ -32,21 +34,21 @@ const ALL_AUTHORS = gql`
 `;
 
 const AuthorYear = ({ authors }) => {
-  const [name, setName] = useState("");
+  const [name, setName] = useState(authors[0].name);
   const [bornDate, setBornDate] = useState("");
 
   const [editYear] = useMutation(EDIT_BIRTHDATE, {
     refetchQueries: [{ query: ALL_BOOKS }, { query: ALL_AUTHORS }],
   });
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
+    console.log(`authors here: ${authors}`);
     console.log(`value for name: ${name}`);
     console.log(`value for name: ${bornDate}`);
     editYear({ variables: { name, setBornTo: parseInt(bornDate) } });
 
-    // setName("");
     setBornDate("");
   };
 

@@ -1,4 +1,5 @@
 import { gql, useQuery } from "@apollo/client";
+import { useState } from "react";
 
 const ALL_BOOKS = gql`
   query {
@@ -8,12 +9,14 @@ const ALL_BOOKS = gql`
         name
       }
       published
+      genres
     }
   }
 `;
 
 const Books = (props) => {
   const bookResult = useQuery(ALL_BOOKS);
+  const [filtered, setFiltered] = useState(null);
 
   if (!props.show) {
     return null;
@@ -24,11 +27,31 @@ const Books = (props) => {
   }
 
   const books = bookResult.data.allBooks;
+  const genres = [];
+  var mergedArray;
+  var uniqueGenres;
 
+  for (let i = 0; i < books.length; i++) {
+    genres.push(books[i].genres);
+    mergedArray = genres.flat(1);
+    uniqueGenres = [...new Set(mergedArray)];
+  }
+  uniqueGenres.push("all genres");
+
+  const clickedFilter = (genre) => {
+    if (genre === "all genres") {
+      setFiltered(books);
+    } else {
+      var filteredBooks = books.filter((book) => {
+        return book.genres.includes(genre);
+      });
+
+      setFiltered(filteredBooks);
+    }
+  };
   return (
     <div>
       <h2>books</h2>
-
       <table>
         <tbody>
           <tr>
@@ -36,15 +59,27 @@ const Books = (props) => {
             <th>author</th>
             <th>published</th>
           </tr>
-          {books.map((a) => (
-            <tr key={a.title}>
-              <td>{a.title}</td>
-              <td>{a.author.name}</td>
-              <td>{a.published}</td>
-            </tr>
-          ))}
+          {!filtered
+            ? books.map((a) => (
+                <tr key={a.title}>
+                  <td>{a.title}</td>
+                  <td>{a.author.name}</td>
+                  <td>{a.published}</td>
+                </tr>
+              ))
+            : filtered.map((b) => (
+                <tr key={b.title}>
+                  <td>{b.title}</td>
+                  <td>{b.author.name}</td>
+                  <td>{b.published}</td>
+                </tr>
+              ))}
         </tbody>
       </table>
+      {uniqueGenres &&
+        uniqueGenres.map((genre) => (
+          <button onClick={() => clickedFilter(genre)}>{genre}</button>
+        ))}
     </div>
   );
 };

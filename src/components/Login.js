@@ -5,11 +5,12 @@ const USER_LOGIN = gql`
   mutation login($username: String!, $password: String!) {
     login(username: $username, password: $password) {
       value
+      favouriteGenre
     }
   }
 `;
 
-const Login = ({ setToken }) => {
+const Login = ({ setToken, setFavGenre }) => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
 
@@ -31,12 +32,13 @@ const Login = ({ setToken }) => {
 
   useEffect(() => {
     if (result.data) {
-      console.log(`result.data is ${result.data.login.value}`);
+      console.log(`result.data is ${result.data.login.favouriteGenre}`);
+      setFavGenre(result.data.login.favouriteGenre);
       const token = result.data.login.value;
       setToken(token);
       localStorage.setItem("books-user-token", token);
     }
-  });
+  }, [result.data]);
 
   return (
     <div>

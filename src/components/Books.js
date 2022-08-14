@@ -1,5 +1,5 @@
 import { gql, useQuery } from "@apollo/client";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 const ALL_BOOKS = gql`
   query {
@@ -14,9 +14,33 @@ const ALL_BOOKS = gql`
   }
 `;
 
+const FILTERED_BOOKS = gql`
+  query findFilteredBooks($genre: String) {
+    allBooks(genre: $genre) {
+      title
+      author {
+        name
+      }
+      published
+    }
+  }
+`;
+
 const Books = (props) => {
   const bookResult = useQuery(ALL_BOOKS);
   const [filtered, setFiltered] = useState(null);
+  const [genre, setGenre] = useState(null);
+
+  const filteredBooksResult = useQuery(FILTERED_BOOKS, {
+    variables: { genre },
+    skip: !genre,
+  });
+
+  useEffect(() => {
+    if (filteredBooksResult.data) {
+      setFiltered(filteredBooksResult.data.allBooks);
+    }
+  }, [filteredBooksResult.data]);
 
   if (!props.show) {
     return null;
@@ -42,11 +66,11 @@ const Books = (props) => {
     if (genre === "all genres") {
       setFiltered(books);
     } else {
-      var filteredBooks = books.filter((book) => {
-        return book.genres.includes(genre);
-      });
-
-      setFiltered(filteredBooks);
+      setGenre(genre);
+      // var filteredBooks = books.filter((book) => {
+      //   return book.genres.includes(genre);
+      // });
+      // setFiltered(filteredBooks);
     }
   };
   return (

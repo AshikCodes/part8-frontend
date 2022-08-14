@@ -4,6 +4,7 @@ import Books from "./components/Books";
 import NewBook from "./components/NewBook";
 import Login from "./components/Login";
 import { gql, useApolloClient, useQuery } from "@apollo/client";
+import Recommend from "./components/Recommend";
 
 const ALL_AUTHORS = gql`
   query {
@@ -28,6 +29,7 @@ const ALL_BOOKS = gql`
 
 const App = () => {
   const [page, setPage] = useState("authors");
+  const [favGenre, setFavGenre] = useState(null);
   const [token, setToken] = useState(null);
   const client = useApolloClient();
   const result = useQuery(ALL_AUTHORS);
@@ -51,6 +53,9 @@ const App = () => {
         {!token && <button onClick={() => setPage("login")}>login</button>}
         {token && <button onClick={() => setPage("add")}>add book</button>}
         {token && <button onClick={handleLogout}>logout</button>}
+        {token && (
+          <button onClick={() => setPage("recommend")}>recommend</button>
+        )}
       </div>
 
       <Authors show={page === "authors"} authors={result.data.allAuthors} />
@@ -60,8 +65,14 @@ const App = () => {
       <NewBook show={page === "add"} />
 
       {page === "login" && (
-        <Login show={page === "login"} setToken={setToken} />
+        <Login
+          show={page === "login"}
+          setToken={setToken}
+          setFavGenre={setFavGenre}
+        />
       )}
+
+      {page === "recommend" && <Recommend favGenre={favGenre}></Recommend>}
     </div>
   );
 };
